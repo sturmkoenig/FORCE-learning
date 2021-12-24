@@ -1,0 +1,29 @@
+#Makefile13
+#make -Bf Makefile13 all
+
+VERSION=13
+CC=gcc
+
+SOURCESpop.c= glm_popdyn_1.3.c
+
+CFLAGS=-lm -lgsl -lgslcblas -lfftw3 -O3 -Wall -Wextra -Wno-unused-result -I/cbscratch/transtec/benchmarks/necbench/EM/relion/gcc/4.9.2/openmpi/1.8.3/include/ -L/cbscratch/transtec/benchmarks/necbench/EM/relion/gcc/4.9.2/openmpi/1.8.3/lib/
+
+
+.PHONY : clean all
+
+ 
+all: glm_popdyn.so 
+
+
+
+glm_popdyn.so : glm_popdyn.o
+	$(CC) -shared -Wl,-soname,glm_popdyn_$(VERSION).so -o glm_popdyn_$(VERSION).so glm_popdyn_$(VERSION).o $(CFLAGS) 
+
+glm_popdyn.o : $(SOURCESpop.c)
+	$(CC) -c -fPIC $(SOURCESpop.c) -o glm_popdyn_$(VERSION).o $(CFLAGS) 
+
+clean :
+	rm -vf glm_popdyn_$(VERSION).so glm_popdyn_$(VERSION).o glm_popdyn.pyc glm_netw sim_$(VERSION).so glm netw_sim_$(VERSION).o glm_netw_sim.pyc glm_mastereq_$(VERSION).so glm_mastereq_$(VERSION).o glm_mastereq.pyc
+
+svn : glm_netw_sim.so glm_popdyn.so
+	svn add --force glm_popdyn_$(VERSION).so glm_netw_sim_$(VERSION).so glm_mastereq_$(VERSION).so $(SOURCESneuron.c) $(SOURCESpop.c) $(SOURCESmaster.c)
